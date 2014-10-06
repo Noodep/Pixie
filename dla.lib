@@ -1,0 +1,55 @@
+<?php
+	namespace Pixie;
+
+	class DLAException extends \Exception {};
+
+	class DLA {
+		private static $INSTANCE = null;
+		private $conn_hdl = null;
+
+		private function __construct($dla_conf) {
+			$this->conn_hdl = new \PDO($dla_conf->dsn, $dla_conf->usr, $dla_conf->pwd);
+		}
+
+		public static function init($dla_conf) {
+			if(!isset(DLA::$INSTANCE))
+				DLA::$INSTANCE = new DLA($dla_conf);
+		}
+
+		public static function getConn() {
+			return DLA::$INSTANCE;
+		}
+
+		public static function requestAssoc($sql, $data) {
+			$req = DLA::request($sql, $data);
+			return $req->fetchAll(\PDO::FETCH_ASSOC);
+		}
+
+		public static function requestFunc($sql, $data, $func) {
+			$req = DLA::request($sql, $data);
+			return $req->fetchAll(\PDO::FETCH_FUNC, $func);
+		}
+
+		public static function request($sql, $data) {
+			$req = DLA::$INSTANCE->conn_hdl->prepare($sql);
+			if($data === null)
+				$req->execute();
+			else
+				$req->execute($data);
+			return $req;
+		}
+
+	}
+
+	class DLAConf {
+		public $dsn = null;
+		public $usr = null;
+		public $pwd = null;
+
+		public function __construct($dsn, $usr, $pwd) {
+			$this->dsn = $dsn;
+			$this->usr = $usr;
+			$this->pwd = $pwd;
+		}
+	}
+?>

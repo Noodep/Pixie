@@ -1,0 +1,93 @@
+<?php
+	namespace Pixie;
+	use \Pixie\Utils as _;
+
+	class RouterException extends \Exception {};
+
+	class Router {
+
+		public static function dispatch()
+		{
+			$route = static::match($_SERVER['REQUEST_URI']);
+
+			$module = $route['module'];
+			unset($route['module']);
+			$action = $route['action'];
+			unset($route['action']);
+			$namespace = $route['namespace'];
+			unset($route['namespace']);
+			$layout = isset($route['layout']) ? $route['layout'] : 'default';
+			unset($route['layout']);
+
+			$layout = _::locateLayout($layout); 
+			$view = _::locateView($module, $action);
+
+			_::includeModule($module);
+			
+			$module_class_name = '\\'.$namespace.'\\'.ucfirst(strtolower($module)).'Module';
+			$mod_obj= new $module_class_name();
+			
+			if(!method_exists($mod_obj, $action))
+				throw new RouterException('Inexistant action "'.$action.'" for module "'.$module.'" : please check module class file in your application folder !');
+
+			$data = $mod_obj->$action($route);
+			
+			if(_::isAjax())
+				include($view);
+			else
+				include($layout);
+		}
+
+		private static function match($requested_uri) {
+			global $ROUTES;
+			$request_atoms = Router::explodeURI($requested_uri);
+
+			foreach ($ROUTES as $url => $conf) {
+				// If default route, automatically validate it;
+				if($url === '*') {
+					$route = $conf;
+					break;
+				}
+
+				$current_atoms = Router::explodeURI($url);
+
+				// If length of routes are different not valid
+				if(count($current_atoms) !== count($request_atoms))
+					continue;
+
+				$valid = true;
+				foreach($current_atoms as $index => $atom)
+				{
+					if(!isset($request_atoms[$index]) || !Router::atomMatch($conf, $request_atoms[$index], $atom))
+					{
+						$valid = false;
+						break;
+					}
+				}
+
+				if($valid)
+				{
+					$route = $conf;
+					break;
+				}
+			}
+
+			return $route;
+		}
+
+		private static function atomMatch(&$conf, $req, $cur) {
+			if(strpos($cur, ':') === 0) {
+				$name = substr($cur, 1);
+				$conf[$name] = $req;
+				return true;
+			}
+
+			return $req === $cur;
+		}
+
+		public static function explodeURI($uri) {
+			$uri = trim($uri,'/');
+			return explode('/', $uri);
+		}
+	}
+?>

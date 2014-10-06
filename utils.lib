@@ -1,0 +1,63 @@
+<?php
+	namespace Pixie;
+
+	define('MODULE_FOLDER', 'module');
+
+	class Utils {
+		
+		public static function debug ( $value ) {
+			echo '<pre>', $value ,'</pre>';
+		}
+		
+		public static function dump ( $value ) {
+			echo '<pre>' , var_dump($value) , '</pre>';
+		}
+
+		public static function includeLib($name)
+		{
+			$lib_file = APPLICATION_ROOT.DS.$name.'.lib';
+			if(file_exists($lib_file))
+				require_once($lib_file);
+			$lib_file = FRAMEWORK_ROOT.DS.$name.'.lib';
+			if(file_exists($lib_file))
+				require_once($lib_file);
+		}
+
+		public static function includeModule($name)
+		{
+			$mod_file = APPLICATION_ROOT.DS.MODULE_FOLDER.DS.$name.'.mod';
+			if(!file_exists($mod_file))
+				throw new Exception('Inexistant Module "'.$name.'" : please check module directory in your application folder !');
+
+			require_once($mod_file);
+		}
+
+		public static function locateLayout($name)
+		{
+			$roots = [APPLICATION_ROOT, FRAMEWORK_ROOT];
+			$rel_layout = DS.'layout'.DS.$name.'.layout';
+
+			foreach ($roots as $root) {
+				$layout_file = $root.$rel_layout;
+				if(file_exists($layout_file))
+					return $layout_file;
+			}
+		}
+
+		public static function locateView($module,$name)
+		{
+			$roots = [APPLICATION_ROOT, FRAMEWORK_ROOT];
+			$rel_view = DS.'module'.DS.$module.DS.$name.'.view';
+
+			foreach ($roots as $root) {
+				$view_file = $root.$rel_view;
+				if(file_exists($view_file))
+					return $view_file;
+			}
+		}
+
+		public static function isAjax() {
+			return isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+		}
+	}
+?>

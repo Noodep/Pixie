@@ -1,0 +1,17 @@
+<?php
+	namespace Pixie;
+	use \Pixie\Utils as _;
+	use \Pixie\Router;
+
+	_::IncludeLib('Router');
+
+	class Boot {
+		public static function init() {
+			try {
+				Router::dispatch();
+			} catch(\Exception $e) {
+				echo $e->getMessage();
+			}
+		}
+	}
+?>

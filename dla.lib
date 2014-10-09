@@ -1,6 +1,8 @@
 <?php
 	namespace Pixie;
 
+	use \Pixie\Utils as _;
+
 	class DLAException extends \Exception {};
 
 	class DLA {
@@ -37,6 +39,10 @@
 			else
 				$req->execute($data);
 			return $req;
+		}
+
+		public static function dumpError() {
+			_::dump(DLA::$INSTANCE->conn_hdl->errorInfo());
 		}
 
 	}

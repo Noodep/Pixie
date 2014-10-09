@@ -56,6 +56,11 @@
 			}
 		}
 
+		public static function redirect($url, $status = 303) {
+			header('Location: ' . $url, true, $statusCode);
+			die();
+		}
+
 		public static function isAjax() {
 			return isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 		}

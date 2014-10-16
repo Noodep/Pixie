@@ -27,7 +27,7 @@
 		{
 			$mod_file = APPLICATION_ROOT.DS.MODULE_FOLDER.DS.$name.'.mod';
 			if(!file_exists($mod_file))
-				throw new Exception('Inexistant Module "'.$name.'" : please check module directory in your application folder !');
+				throw new \Exception('Inexistant Module "'.$name.'" : please check module directory in your application folder !');
 
 			require_once($mod_file);
 		}

@@ -41,6 +41,10 @@
 			return $req;
 		}
 
+		public static function lastInsertId($sequence) {
+			return DLA::$INSTANCE->conn_hdl->lastInsertId($sequence);
+		}
+
 		public static function dumpError() {
 			_::dump(DLA::$INSTANCE->conn_hdl->errorInfo());
 		}

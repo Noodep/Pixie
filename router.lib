@@ -40,6 +40,7 @@
 
 		private static function match($requested_uri) {
 			global $ROUTES;
+
 			$request_atoms = Router::explodeURI($requested_uri);
 
 			foreach ($ROUTES as $url => $conf) {
@@ -76,6 +77,7 @@
 		}
 
 		private static function atomMatch(&$conf, $req, $cur) {
+
 			if(strpos($cur, ':') === 0) {
 				$name = substr($cur, 1);
 				$conf[$name] = $req;
@@ -87,6 +89,9 @@
 
 		public static function explodeURI($uri) {
 			$uri = trim($uri,'/');
+			if(strlen($uri) === 0)
+				return array();
+
 			return explode('/', $uri);
 		}
 	}

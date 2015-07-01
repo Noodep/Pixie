@@ -15,17 +15,17 @@
 
 		public static function includeLib($name)
 		{
-			$lib_file = APPLICATION_ROOT.DS.$name.'.lib';
+			$lib_file = APPLICATION_ROOT.DS.strtolower($name).'.lib';
 			if(file_exists($lib_file))
 				require_once($lib_file);
-			$lib_file = FRAMEWORK_ROOT.DS.$name.'.lib';
+			$lib_file = FRAMEWORK_ROOT.DS.strtolower($name).'.lib';
 			if(file_exists($lib_file))
 				require_once($lib_file);
 		}
 
 		public static function includeModule($name)
 		{
-			$mod_file = APPLICATION_ROOT.DS.MODULE_FOLDER.DS.$name.'.mod';
+			$mod_file = APPLICATION_ROOT.DS.MODULE_FOLDER.DS.strtolower($name).'.mod';
 			if(!file_exists($mod_file))
 				throw new \Exception('Inexistant Module "'.$name.'" : please check module directory in your application folder !');
 
